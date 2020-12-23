@@ -1,0 +1,33 @@
+apiVersion: api.kouplet.com/v1alpha1
+kind: KoupletTest
+metadata:
+  name: sample-tests-run
+spec:
+  defaultTestExpireTime: 2700
+  failureRetries: 10
+  image: us.icr.io/jgwest/sample-tests:my-image-tag
+  maxActiveTests: 10
+  minimumTimeBetweenTestRuns: 10
+  name: "Sample tests"
+  objectStorageCredentials:
+    bucketLocation: us-east-standard
+    bucketName: kouplet-bucket
+    endpoint: s3.us-east.cloud-object-storage.appdomain.cloud
+    credentialsSecretName: kouplet-s3-secret
+  tests:
+  - values:
+    - name: TEST_NAME
+      value: Sample1Test
+  # - values:
+  #   - name: TEST_NAME
+  #     value: Sample2Test
+  # - values:
+  #   - name: TEST_NAME
+  #     value: Sample3Test
+  # - values:
+  #   - name: TEST_NAME
+  #     value: Sample4Test
+  # - values:
+  #   - name: TEST_NAME
+  #     value: Sample5Test
+  timeout: 15000

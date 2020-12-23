@@ -1,0 +1,13 @@
+apiVersion: api.kouplet.com/v1alpha1
+kind: KoupletBuild
+metadata:
+  name: sample-tests
+spec:
+  containerRegistry:
+    credentialsSecretName: kouplet-container-registry-secret
+  gitRepo:
+    credentialsSecretName: kouplet-ssh-key-secret
+    url: git@gitlab.com:jgwest/kouplet
+    subpath: /examples/sample-test
+  image: us.icr.io/jgwest/sample-tests:my-image-tag
+  builderImage: us.icr.io/jgwest/kouplet-builder-util-test:my-builder-image-tag
