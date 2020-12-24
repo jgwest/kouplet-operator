@@ -1,0 +1,134 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: koupletbuilds.api.kouplet.com
+spec:
+  group: api.kouplet.com
+  names:
+    kind: KoupletBuild
+    listKind: KoupletBuildList
+    plural: koupletbuilds
+    singular: koupletbuild
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: KoupletBuild is the Schema for the koupletbuilds API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: KoupletBuildSpec defines the desired state of KoupletBuild
+            properties:
+              buildContraints:
+                description: KoupletBuildConstraints ...
+                properties:
+                  maxJobBuildTimeInSeconds:
+                    type: integer
+                  maxJobWaitStartTimeInSeconds:
+                    type: integer
+                  maxNumberofBuildAttempts:
+                    type: integer
+                  maxOverallBuildTimeInSeconds:
+                    type: integer
+                type: object
+              builderImage:
+                type: string
+              containerRegistry:
+                description: KoupletContainerRegistry ...
+                properties:
+                  credentialsSecretName:
+                    type: string
+                type: object
+              gitRepo:
+                description: KoupletGitRepo ...
+                properties:
+                  credentialsSecretName:
+                    type: string
+                  subpath:
+                    type: string
+                  url:
+                    description: 'TODO: URL should not be omitempty'
+                    type: string
+                type: object
+              image:
+                type: string
+              urls:
+                items:
+                  type: string
+                type: array
+            type: object
+          status:
+            description: KoupletBuildStatus defines the observed state of KoupletBuild
+            properties:
+              activeBuildAttempts:
+                items:
+                  description: KoupletBuildAttempt ...
+                  properties:
+                    jobCompletionTime:
+                      format: int64
+                      type: integer
+                    jobName:
+                      type: string
+                    jobQueueTime:
+                      format: int64
+                      type: integer
+                    jobStartTime:
+                      format: int64
+                      type: integer
+                    jobSucceeded:
+                      type: boolean
+                    jobUID:
+                      type: string
+                  required:
+                  - jobName
+                  - jobQueueTime
+                  - jobUID
+                  type: object
+                type: array
+              completedBuildAttempts:
+                items:
+                  description: KoupletBuildAttempt ...
+                  properties:
+                    jobCompletionTime:
+                      format: int64
+                      type: integer
+                    jobName:
+                      type: string
+                    jobQueueTime:
+                      format: int64
+                      type: integer
+                    jobStartTime:
+                      format: int64
+                      type: integer
+                    jobSucceeded:
+                      type: boolean
+                    jobUID:
+                      type: string
+                  required:
+                  - jobName
+                  - jobQueueTime
+                  - jobUID
+                  type: object
+                type: array
+              status:
+                type: string
+            required:
+            - status
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

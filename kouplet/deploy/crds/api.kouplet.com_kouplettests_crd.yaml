@@ -1,0 +1,234 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: kouplettests.api.kouplet.com
+spec:
+  group: api.kouplet.com
+  names:
+    kind: KoupletTest
+    listKind: KoupletTestList
+    plural: kouplettests
+    singular: kouplettest
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: KoupletTest is the Schema for the kouplettests API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: KoupletTestSpec defines the desired state of KoupletTest
+            properties:
+              command:
+                items:
+                  type: string
+                type: array
+              defaultTestExpireTime:
+                type: integer
+              env:
+                items:
+                  description: KoupletTestEnv contains a single environment variable
+                    key/value pair
+                  properties:
+                    name:
+                      type: string
+                    value:
+                      type: string
+                  required:
+                  - name
+                  - value
+                  type: object
+                type: array
+              failureRetries:
+                type: integer
+              image:
+                type: string
+              maxActiveTests:
+                type: integer
+              minimumTimeBetweenTestRuns:
+                type: integer
+              name:
+                type: string
+              numberOfNodes:
+                type: integer
+              objectStorageCredentials:
+                description: KoupletObjectStorage ...
+                properties:
+                  bucketLocation:
+                    type: string
+                  bucketName:
+                    type: string
+                  credentialsSecretName:
+                    type: string
+                  endpoint:
+                    type: string
+                required:
+                - bucketLocation
+                - bucketName
+                - credentialsSecretName
+                - endpoint
+                type: object
+              tests:
+                items:
+                  description: KoupletTestEntry specifies which tests to run.
+                  properties:
+                    env:
+                      items:
+                        description: KoupletTestEnv contains a single environment
+                          variable key/value pair
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                        - name
+                        - value
+                        type: object
+                      type: array
+                    labels:
+                      items:
+                        description: KoupletTestEntryLabel are generic key/value pairs
+                          for end-user use
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                        - name
+                        - value
+                        type: object
+                      type: array
+                    timeout:
+                      type: integer
+                    values:
+                      items:
+                        description: KoupletTestEntryKV test container specific values
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                        - name
+                        - value
+                        type: object
+                      type: array
+                  required:
+                  - values
+                  type: object
+                type: array
+              timeout:
+                type: integer
+            required:
+            - image
+            - name
+            - tests
+            type: object
+          status:
+            description: KoupletTestStatus defines the observed state of KoupletTest
+            properties:
+              dateSubmitted:
+                format: int64
+                type: integer
+              endTime:
+                format: int64
+                type: integer
+              percent:
+                type: integer
+              results:
+                items:
+                  description: KoupletTestJobResultEntry ...
+                  properties:
+                    clusterResource:
+                      description: KoupletTestJobResultClusterResource ...
+                      properties:
+                        jobName:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - jobName
+                      - namespace
+                      type: object
+                    id:
+                      type: integer
+                    labels:
+                      items:
+                        description: KoupletTestEntryLabel are generic key/value pairs
+                          for end-user use
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                        - name
+                        - value
+                        type: object
+                      type: array
+                    log:
+                      type: string
+                    numErrors:
+                      type: integer
+                    numFailures:
+                      type: integer
+                    numTests:
+                      type: integer
+                    percent:
+                      type: integer
+                    result:
+                      type: string
+                    retryFrom:
+                      type: integer
+                    status:
+                      type: string
+                    test:
+                      items:
+                        description: KoupletTestEntryKV test container specific values
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                        - name
+                        - value
+                        type: object
+                      type: array
+                    testTime:
+                      format: int64
+                      type: integer
+                  required:
+                  - id
+                  - status
+                  - test
+                  type: object
+                type: array
+              startTime:
+                format: int64
+                type: integer
+              status:
+                type: string
+            required:
+            - results
+            - status
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

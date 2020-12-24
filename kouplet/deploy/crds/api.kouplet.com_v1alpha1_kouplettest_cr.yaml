@@ -1,0 +1,7 @@
+apiVersion: api.kouplet.com/v1alpha1
+kind: KoupletTest
+metadata:
+  name: example-kouplettest
+spec:
+  # Add fields here
+  size: 3
