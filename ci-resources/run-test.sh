@@ -22,7 +22,7 @@ dispose () {
 	print_status "* Deleting namespace $NAMESPACE"
 	kubectl delete namespace "$NAMESPACE"
 
-	cd "$ROOT/../../kouplet"
+	cd "$ROOT/../kouplet"
 	kubectl delete -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_koupletbuilds_crd.yaml
 	kubectl delete -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_kouplettests_crd.yaml
 }
@@ -46,7 +46,7 @@ NAMESPACE=kouplet
 # -----------------------------------------------------
 print_status "* Build and push the builder image"
 
-cd "$ROOT/../../builder-image-util"
+cd "$ROOT/../builder-image"
 
 docker build -t kouplet-builder-util .
 
@@ -58,7 +58,7 @@ docker push "$REGISTRY_HOST_PREFIX""$REGISTRY_NAMESPACE"/kouplet-builder-util-te
 # -----------------------------------------------------
 print_status "* Build and push the operator"
 
-cd "$ROOT/../../kouplet"
+cd "$ROOT/../kouplet"
 
 operator-sdk build "$CONTAINER_IMAGE"
 docker push "$CONTAINER_IMAGE"
@@ -97,7 +97,7 @@ kubectl create secret generic kouplet-s3-secret -n "$NAMESPACE" \
 # -----------------------------------------------------
 print_status "* Apply k8s operator resources"
 
-cd "$ROOT/../../kouplet"
+cd "$ROOT/../kouplet"
 
 TEMP_OPERATOR_YAML=`mktemp`
 
