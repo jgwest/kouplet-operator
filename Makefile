@@ -1,5 +1,3 @@
-NAMESPACE?=kouplet
-
 .PHONY: build-operator-parser
 build-operator-parser:
 	cd operator-log-parser && mvn package
