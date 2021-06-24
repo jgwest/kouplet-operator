@@ -48,11 +48,18 @@ print_status "* Build and push the builder image"
 
 cd "$ROOT/../builder-image"
 
-docker build -t kouplet-builder-util .
 
-docker tag kouplet-builder-util "$REGISTRY_HOST_PREFIX""$REGISTRY_NAMESPACE"/kouplet-builder-util-test:"$TEST_UUID"
+CONTAINER_REGISTRY_NAMESPACE=jgwest \
+	CONTAINER_IMAGE=kouplet-builder-util-test \
+	CONTAINER_REGISTRY_PREFIX="$REGISTRY_HOST_PREFIX" \
+	CONTAINER_IMAGE_LABEL="$TEST_UUID" \
+	make build-image-push
 
-docker push "$REGISTRY_HOST_PREFIX""$REGISTRY_NAMESPACE"/kouplet-builder-util-test:"$TEST_UUID"
+
+#docker build -t kouplet-builder-util .
+#docker tag kouplet-builder-util "$REGISTRY_HOST_PREFIX""$REGISTRY_NAMESPACE"/kouplet-builder-util-test:"$TEST_UUID"
+
+#docker push "$REGISTRY_HOST_PREFIX""$REGISTRY_NAMESPACE"/kouplet-builder-util-test:"$TEST_UUID"
 
 
 # -----------------------------------------------------
