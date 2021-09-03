@@ -1,0 +1,7 @@
+apiVersion: api.kouplet.com/v1alpha1
+kind: KoupletBuild
+metadata:
+  name: koupletbuild-sample
+spec:
+  # Add fields here
+  foo: bar

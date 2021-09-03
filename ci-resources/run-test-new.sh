@@ -22,7 +22,7 @@ dispose () {
 	print_status "* Deleting namespace $NAMESPACE"
 	kubectl delete namespace "$NAMESPACE"
 
-	cd "$ROOT/../kouplet"
+	cd "$ROOT/../kouplet-new"
 	kubectl delete -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_koupletbuilds_crd.yaml
 	kubectl delete -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_kouplettests_crd.yaml
 }
@@ -65,10 +65,13 @@ CONTAINER_REGISTRY_NAMESPACE=jgwest \
 # -----------------------------------------------------
 print_status "* Build and push the operator"
 
-cd "$ROOT/../kouplet"
+cd "$ROOT/../kouplet-new"
+make
 
-operator-sdk build "$CONTAINER_IMAGE"
-docker push "$CONTAINER_IMAGE"
+IMG="$CONTAINER_IMAGE" make docker-build 
+IMG="$CONTAINER_IMAGE" make docker-push
+#operator-sdk build "$CONTAINER_IMAGE"
+#docker push "$CONTAINER_IMAGE"
 
 # -----------------------------------------------------
 print_status "* Create namespace '$NAMESPACE' and create secrets"
@@ -104,28 +107,35 @@ kubectl create secret generic kouplet-s3-secret -n "$NAMESPACE" \
 # -----------------------------------------------------
 print_status "* Apply k8s operator resources"
 
-cd "$ROOT/../kouplet"
-
-TEMP_OPERATOR_YAML=`mktemp`
-
-kubectl apply -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_koupletbuilds_crd.yaml
-kubectl apply -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_kouplettests_crd.yaml
+cd "$ROOT/../kouplet-new"
 
 kubectl apply -n "$NAMESPACE" -f "$ROOT/../../pvc.yaml"
 
-cp deploy/operator.yaml "$TEMP_OPERATOR_YAML"
-sed -i 's|REPLACE_IMAGE|'$CONTAINER_IMAGE'|g' "$TEMP_OPERATOR_YAML"
+make deploy
 
-kubectl create -n "$NAMESPACE" -f deploy/service_account.yaml
 
-if [ -n "$IMAGE_PULL_SECRET_NAME" ]; then
-	kubectl patch serviceaccount kouplet -p '{"imagePullSecrets": [{"name": "'$IMAGE_PULL_SECRET_NAME'"}]}' -n "$NAMESPACE"
-	kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "'$IMAGE_PULL_SECRET_NAME'"}]}' -n "$NAMESPACE"
-fi
+# ------------------------
 
-kubectl create -n "$NAMESPACE" -f deploy/role.yaml
-kubectl create -n "$NAMESPACE" -f deploy/role_binding.yaml
-kubectl create -n "$NAMESPACE" -f "$TEMP_OPERATOR_YAML"
+# TEMP_OPERATOR_YAML=`mktemp`
+
+# kubectl apply -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_koupletbuilds_crd.yaml
+# kubectl apply -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_kouplettests_crd.yaml
+
+# kubectl apply -n "$NAMESPACE" -f "$ROOT/../../pvc.yaml"
+
+# cp deploy/operator.yaml "$TEMP_OPERATOR_YAML"
+# sed -i 's|REPLACE_IMAGE|'$CONTAINER_IMAGE'|g' "$TEMP_OPERATOR_YAML"
+
+# kubectl create -n "$NAMESPACE" -f deploy/service_account.yaml
+
+# if [ -n "$IMAGE_PULL_SECRET_NAME" ]; then
+# 	kubectl patch serviceaccount kouplet -p '{"imagePullSecrets": [{"name": "'$IMAGE_PULL_SECRET_NAME'"}]}' -n "$NAMESPACE"
+# 	kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "'$IMAGE_PULL_SECRET_NAME'"}]}' -n "$NAMESPACE"
+# fi
+
+# kubectl create -n "$NAMESPACE" -f deploy/role.yaml
+# kubectl create -n "$NAMESPACE" -f deploy/role_binding.yaml
+# kubectl create -n "$NAMESPACE" -f "$TEMP_OPERATOR_YAML"
 
 # -----------------------------------------------------
 print_status "* Create KoupletBuild"
