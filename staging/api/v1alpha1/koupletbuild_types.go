@@ -20,22 +20,57 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // KoupletBuildSpec defines the desired state of KoupletBuild
 type KoupletBuildSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	Urls    []string       `json:"urls"`
+	GitRepo KoupletGitRepo `json:"gitRepo"`
+	// Image is the target name of the container image, that will built, tagged, and pushed to the remote registry
+	Image             string                   `json:"image"`
+	ContainerRegistry KoupletContainerRegistry `json:"containerRegistry"`
+	BuildContraints   *KoupletBuildConstraints `json:"buildContraints,omitempty"`
+	// BuilderImage is the container image of the build Job
+	BuilderImage string `json:"builderImage"`
+}
 
-	// Foo is an example field of KoupletBuild. Edit koupletbuild_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+// KoupletBuildConstraints ...
+type KoupletBuildConstraints struct {
+	MaxOverallBuildTimeInSeconds *int `json:"maxOverallBuildTimeInSeconds,omitempty"`
+	MaxNumberofBuildAttempts     *int `json:"maxNumberofBuildAttempts,omitempty"`
+	MaxJobBuildTimeInSeconds     *int `json:"maxJobBuildTimeInSeconds,omitempty"`
+	MaxJobWaitStartTimeInSeconds *int `json:"maxJobWaitStartTimeInSeconds,omitempty"`
+}
+
+// KoupletGitRepo ...
+type KoupletGitRepo struct {
+	URL                   string `json:"url"`
+	SubPath               string `json:"subpath,omitempty"`
+	CredentialsSecretName string `json:"credentialsSecretName,omitempty"`
+}
+
+// KoupletContainerRegistry ...
+type KoupletContainerRegistry struct {
+	CredentialsSecretName string `json:"credentialsSecretName"`
+}
+
+// KoupletBuildStatus defines the observed state of KoupletBuild
+
+// KoupletBuildAttempt ...
+type KoupletBuildAttempt struct {
+	JobName           string `json:"jobName"`
+	JobUID            string `json:"jobUID"`
+	JobQueueTime      int64  `json:"jobQueueTime"`
+	JobStartTime      *int64 `json:"jobStartTime,omitempty"`
+	JobCompletionTime *int64 `json:"jobCompletionTime,omitempty"`
+	JobSucceeded      *bool  `json:"jobSucceeded,omitempty"`
 }
 
 // KoupletBuildStatus defines the observed state of KoupletBuild
 type KoupletBuildStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Status                 string                `json:"status"`
+	ActiveBuildAttempts    []KoupletBuildAttempt `json:"activeBuildAttempts,omitempty"`
+	CompletedBuildAttempts []KoupletBuildAttempt `json:"completedBuildAttempts,omitempty"`
 }
 
 //+kubebuilder:object:root=true
