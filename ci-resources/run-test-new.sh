@@ -22,9 +22,10 @@ dispose () {
 	print_status "* Deleting namespace $NAMESPACE"
 	kubectl delete namespace "$NAMESPACE"
 
-	cd "$ROOT/../kouplet-new"
-	kubectl delete -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_koupletbuilds_crd.yaml
-	kubectl delete -n "$NAMESPACE" -f deploy/crds/api.kouplet.com_kouplettests_crd.yaml
+	cd "$ROOT/../staging"
+#	kustomize build config/crd | kubectl delete -f -
+#	kubectl delete -f config/crd/basesapi.kouplet.com_koupletbuilds_crd.yaml
+#	kubectl delete -f deploy/crds/api.kouplet.com_kouplettests_crd.yaml
 }
 
 set -eo pipefail
@@ -65,8 +66,10 @@ CONTAINER_REGISTRY_NAMESPACE=jgwest \
 # -----------------------------------------------------
 print_status "* Build and push the operator"
 
-cd "$ROOT/../kouplet-new"
+cd "$ROOT/../staging"
 make
+
+echo ci is "$CONTAINER_IMAGE"
 
 IMG="$CONTAINER_IMAGE" make docker-build 
 IMG="$CONTAINER_IMAGE" make docker-push
@@ -107,7 +110,7 @@ kubectl create secret generic kouplet-s3-secret -n "$NAMESPACE" \
 # -----------------------------------------------------
 print_status "* Apply k8s operator resources"
 
-cd "$ROOT/../kouplet-new"
+cd "$ROOT/../staging"
 
 kubectl apply -n "$NAMESPACE" -f "$ROOT/../../pvc.yaml"
 

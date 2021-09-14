@@ -3,6 +3,7 @@ kind: KoupletBuild
 metadata:
   name: sample-tests
 spec:
+  urls: []
   containerRegistry:
     credentialsSecretName: kouplet-container-registry-secret
   gitRepo:

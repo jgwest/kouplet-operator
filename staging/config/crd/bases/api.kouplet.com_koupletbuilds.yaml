@@ -36,13 +36,116 @@ spec:
           spec:
             description: KoupletBuildSpec defines the desired state of KoupletBuild
             properties:
-              foo:
-                description: Foo is an example field of KoupletBuild. Edit koupletbuild_types.go
-                  to remove/update
+              buildContraints:
+                description: KoupletBuildConstraints ...
+                properties:
+                  maxJobBuildTimeInSeconds:
+                    type: integer
+                  maxJobWaitStartTimeInSeconds:
+                    type: integer
+                  maxNumberofBuildAttempts:
+                    type: integer
+                  maxOverallBuildTimeInSeconds:
+                    type: integer
+                type: object
+              builderImage:
+                description: BuilderImage is the container image of the build Job
                 type: string
+              containerRegistry:
+                description: KoupletContainerRegistry ...
+                properties:
+                  credentialsSecretName:
+                    type: string
+                required:
+                - credentialsSecretName
+                type: object
+              gitRepo:
+                description: KoupletGitRepo ...
+                properties:
+                  credentialsSecretName:
+                    type: string
+                  subpath:
+                    type: string
+                  url:
+                    type: string
+                required:
+                - url
+                type: object
+              image:
+                description: Image is the target name of the container image, that
+                  will built, tagged, and pushed to the remote registry
+                type: string
+              urls:
+                items:
+                  type: string
+                type: array
+            required:
+            - builderImage
+            - containerRegistry
+            - gitRepo
+            - image
+            - urls
             type: object
           status:
             description: KoupletBuildStatus defines the observed state of KoupletBuild
+            properties:
+              activeBuildAttempts:
+                items:
+                  description: KoupletBuildAttempt ...
+                  properties:
+                    jobCompletionTime:
+                      format: int64
+                      type: integer
+                    jobName:
+                      type: string
+                    jobQueueTime:
+                      format: int64
+                      type: integer
+                    jobStartTime:
+                      format: int64
+                      type: integer
+                    jobSucceeded:
+                      type: boolean
+                    jobUID:
+                      type: string
+                  required:
+                  - jobName
+                  - jobQueueTime
+                  - jobUID
+                  type: object
+                type: array
+              completedBuildAttempts:
+                items:
+                  description: KoupletBuildAttempt ...
+                  properties:
+                    jobCompletionTime:
+                      format: int64
+                      type: integer
+                    jobName:
+                      type: string
+                    jobQueueTime:
+                      format: int64
+                      type: integer
+                    jobStartTime:
+                      format: int64
+                      type: integer
+                    jobSucceeded:
+                      type: boolean
+                    jobUID:
+                      type: string
+                  required:
+                  - jobName
+                  - jobQueueTime
+                  - jobUID
+                  type: object
+                type: array
+              status:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                type: string
+            required:
+            - status
             type: object
         type: object
     served: true
