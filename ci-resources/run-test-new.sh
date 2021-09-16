@@ -114,7 +114,7 @@ cd "$ROOT/../staging"
 
 kubectl apply -n "$NAMESPACE" -f "$ROOT/../../pvc.yaml"
 
-make deploy
+TARGET_NAMESPACE="$NAMESPACE" IMG="$CONTAINER_IMAGE" make deploy
 
 
 # ------------------------
@@ -131,10 +131,13 @@ make deploy
 
 # kubectl create -n "$NAMESPACE" -f deploy/service_account.yaml
 
-# if [ -n "$IMAGE_PULL_SECRET_NAME" ]; then
-# 	kubectl patch serviceaccount kouplet -p '{"imagePullSecrets": [{"name": "'$IMAGE_PULL_SECRET_NAME'"}]}' -n "$NAMESPACE"
-# 	kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "'$IMAGE_PULL_SECRET_NAME'"}]}' -n "$NAMESPACE"
-# fi
+if [ -n "$IMAGE_PULL_SECRET_NAME" ]; then
+	echo "* Patching serviceaccount"
+	kubectl patch serviceaccount kouplet-operator-controller-manager -p '{"imagePullSecrets": [{"name": "'$IMAGE_PULL_SECRET_NAME'"}]}' -n "$NAMESPACE"
+	kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "'$IMAGE_PULL_SECRET_NAME'"}]}' -n "$NAMESPACE"
+	
+	kubectl delete pods --all
+fi
 
 # kubectl create -n "$NAMESPACE" -f deploy/role.yaml
 # kubectl create -n "$NAMESPACE" -f deploy/role_binding.yaml

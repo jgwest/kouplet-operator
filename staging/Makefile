@@ -40,8 +40,9 @@ IMG ?= controller:latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 #CRD_OPTIONS ?= "crd:trivialVersions=true,preserveUnknownFields=false"
 CRD_OPTIONS ?= "crd:crdVersions=v1"
-
 #CRD_OPTIONS ?= "crd:trivialVersions=true,preserveUnknownFields=false"
+
+TARGET_NAMESPACE ?= kouplet-operator-system
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -120,6 +121,7 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/default && $(KUSTOMIZE) edit set namespace ${TARGET_NAMESPACE}
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
