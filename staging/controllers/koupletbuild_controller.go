@@ -21,6 +21,7 @@ import (
 	"os"
 	"time"
 
+	batchv1 "k8s.io/api/batch/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -118,5 +119,6 @@ func (r *KoupletBuildReconciler) Reconcile(ctx context.Context, req ctrl.Request
 func (r *KoupletBuildReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&apiv1alpha1.KoupletBuild{}).
+		Owns(&batchv1.Job{}).
 		Complete(r)
 }

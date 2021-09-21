@@ -30,6 +30,7 @@ import (
 	apiv1alpha1 "github.com/jgwest/kouplet-operator/api/v1alpha1"
 	"github.com/jgwest/kouplet-operator/controllers/kouplettest"
 	"github.com/jgwest/kouplet-operator/controllers/shared"
+	batchv1 "k8s.io/api/batch/v1"
 	kubeErrors "k8s.io/apimachinery/pkg/api/errors"
 )
 
@@ -72,6 +73,10 @@ func appendTestReconcileResult(input ctrl.Result, err error) (ctrl.Result, error
 	return input, nil
 }
 
+//+kubebuilder:rbac:groups="",resources=pods,verbs=get;list;watch
+//+kubebuilder:rbac:groups="",resources=pods/log,verbs=get;watch
+//+kubebuilder:rbac:groups="",resources=secrets,verbs=get;watch
+//+kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=api.kouplet.com,resources=kouplettests,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=api.kouplet.com,resources=kouplettests/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=api.kouplet.com,resources=kouplettests/finalizers,verbs=update
@@ -138,5 +143,6 @@ func (r *KoupletTestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 func (r *KoupletTestReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&apiv1alpha1.KoupletTest{}).
+		Owns(&batchv1.Job{}).
 		Complete(r)
 }
