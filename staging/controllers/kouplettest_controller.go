@@ -75,7 +75,7 @@ func appendTestReconcileResult(input ctrl.Result, err error) (ctrl.Result, error
 
 //+kubebuilder:rbac:groups="",resources=pods,verbs=get;list;watch
 //+kubebuilder:rbac:groups="",resources=pods/log,verbs=get;watch
-//+kubebuilder:rbac:groups="",resources=secrets,verbs=get;watch
+//+kubebuilder:rbac:groups="",resources=secrets,verbs=get;watch;list
 //+kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=api.kouplet.com,resources=kouplettests,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=api.kouplet.com,resources=kouplettests/status,verbs=get;update;patch

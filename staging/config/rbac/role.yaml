@@ -22,6 +22,14 @@ rules:
   - get
   - watch
 - apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
   - api.kouplet.com
   resources:
   - koupletbuilds
